@@ -7,10 +7,11 @@ import json
 import logging
 from typing import Optional
 
-import anthropic
+from google import genai
+from google.genai import types
 import pandas as pd
 
-from src.config import ANTHROPIC_API_KEY, CLAUDE_MODEL, HIGH_RISK_DAYS, MEDIUM_RISK_DAYS
+from src.config import GEMINI_API_KEY, GEMINI_MODEL, HIGH_RISK_DAYS, MEDIUM_RISK_DAYS
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class RecommendationEngine:
     """
 
     def __init__(self):
-        self._client: Optional[anthropic.Anthropic] = None
+        self._client = None
         self._api_available = False
         self._setup_client()
 
@@ -70,18 +71,18 @@ class RecommendationEngine:
         return self._template_explain_risk(item)
 
     def _setup_client(self) -> None:
-        if not ANTHROPIC_API_KEY:
+        if not GEMINI_API_KEY:
             logger.warning(
-                "ANTHROPIC_API_KEY not set. Using template-based recommendations. "
+                "GEMINI_API_KEY not set. Using template-based recommendations. "
                 "Set the key in .env for AI-powered insights."
             )
             return
         try:
-            self._client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+            self._client = genai.Client(api_key=GEMINI_API_KEY)
             self._api_available = True
-            logger.info("Claude API client initialized successfully")
+            logger.info(f"Gemini API client initialized ({GEMINI_MODEL})")
         except Exception as e:
-            logger.warning(f"Failed to initialize Claude client: {e}. Using fallback.")
+            logger.warning(f"Failed to initialize Gemini client: {e}. Using fallback.")
 
     def _claude_chef_specials(
         self,
@@ -137,19 +138,15 @@ Return ONLY valid JSON in this exact format:
 }}"""
 
         try:
-            response = self._client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=2000,
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}],
+            full_prompt = SYSTEM_PROMPT + "\n\n" + prompt
+            response = self._client.models.generate_content(
+                model=GEMINI_MODEL, contents=full_prompt
             )
-            content = response.content[0].text
-            # Extract JSON from response
-            result = self._safe_json_parse(content)
-            result["source"] = "claude_ai"
+            result = self._safe_json_parse(response.text)
+            result["source"] = "gemini_ai"
             return result
         except Exception as e:
-            logger.error(f"Claude API call failed: {e}. Using fallback.")
+            logger.error(f"Gemini API call failed: {e}. Using fallback.")
             return self._template_chef_specials(expiring, staples)
 
     def _claude_inventory_report(self, df: pd.DataFrame, metrics: dict) -> str:
@@ -177,13 +174,10 @@ Write a 3-paragraph report:
 Be direct, specific, and business-focused. Use INR currency. Keep it under 200 words."""
 
         try:
-            response = self._client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=500,
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}],
+            response = self._client.models.generate_content(
+                model=GEMINI_MODEL, contents=SYSTEM_PROMPT + "\n\n" + prompt
             )
-            return response.content[0].text
+            return response.text
         except Exception as e:
             logger.error(f"Report generation failed: {e}")
             return self._template_inventory_report(df, metrics)
@@ -201,12 +195,10 @@ Waste probability: {item.get('waste_probability', 0):.0%}
 Estimated waste: {item.get('estimated_waste_qty', 0)} {item.get('unit')} worth ₹{item.get('waste_value_at_risk', 0):.0f}"""
 
         try:
-            response = self._client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=150,
-                messages=[{"role": "user", "content": prompt}],
+            response = self._client.models.generate_content(
+                model=GEMINI_MODEL, contents=prompt
             )
-            return response.content[0].text
+            return response.text
         except Exception as e:
             return self._template_explain_risk(item)
 

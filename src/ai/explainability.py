@@ -7,7 +7,7 @@ from typing import Optional
 
 import pandas as pd
 
-from src.config import ANTHROPIC_API_KEY, CLAUDE_MODEL
+from src.config import GEMINI_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class ExplainabilityEngine:
     """Converts ML model outputs into actionable, human-readable explanations."""
 
     def __init__(self):
-        self._api_available = bool(ANTHROPIC_API_KEY)
+        self._api_available = bool(GEMINI_API_KEY)
 
     def explain_prediction(
         self,
