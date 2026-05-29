@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+data/
+models/
+logs/
+.DS_Store
+*.joblib
+tests/__pycache__/
