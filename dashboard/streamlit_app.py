@@ -126,7 +126,7 @@ def render_sidebar():
     risk_levels = ["All", "Critical", "High", "Medium", "Low"]
     selected_risk = st.sidebar.selectbox("Risk Level", risk_levels)
 
-    max_expiry = st.sidebar.slider("Max Days to Expiry", 1, 60, 30)
+    max_expiry = st.sidebar.slider("Max Days to Expiry", 1, 365, 365)
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Data")
