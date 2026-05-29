@@ -1,261 +1,378 @@
-# Ecomeal AI — Food Waste Intelligence System
+<div align="center">
 
-An end-to-end AI-powered system for predicting food waste, forecasting demand, detecting inventory anomalies, and generating intelligent Chef Special recommendations for restaurants.
+# 🍃 Ecomeal AI
+### Food Waste Intelligence System for Modern Restaurants
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://ai-powered-food-waste-prediction.streamlit.app)
+[![XGBoost](https://img.shields.io/badge/XGBoost-ML%20Model-orange?style=for-the-badge)](https://xgboost.readthedocs.io)
+[![Gemini](https://img.shields.io/badge/Gemini%20AI-Recommendations-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+<br/>
+
+> **Predict food waste before it happens. Act before money walks out the kitchen door.**
+
+<br/>
+
+[🚀 Live Demo](https://ai-powered-food-waste-prediction.streamlit.app) • [📖 Docs](#-system-architecture) • [⚡ Quick Start](#-quick-start) • [🤖 AI Features](#-ai-integration)
+
+<br/>
+
+![Dashboard Preview](https://via.placeholder.com/900x400/0e1117/00cc96?text=Ecomeal+AI+%E2%80%94+Food+Waste+Intelligence+Dashboard)
+
+</div>
 
 ---
 
-## Quick Start
+## 🎯 The Problem
+
+Restaurants lose **30–40% of purchased food** to waste every year. The root causes are invisible until it's too late:
+
+- 📦 Overstocked perishables expire before they can be used
+- 📉 Demand forecasting is done manually or not at all
+- 🔔 No early warning system for items approaching expiry
+- 💸 Kitchen staff have no financial context for waste decisions
+
+**Ecomeal AI makes all of this visible — and actionable.**
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|---|---|
+| 🔮 **Waste Prediction** | XGBoost + LightGBM ensemble predicts which items will be wasted with **90% AUC** |
+| 📊 **Demand Forecasting** | Holt-Winters time-series forecasting with weekly seasonality for 30-day demand |
+| 🤖 **AI Chef Specials** | Gemini AI generates creative dish recommendations using expiring ingredients |
+| 🔍 **Anomaly Detection** | Isolation Forest + domain rules catch unusual inventory patterns |
+| 💡 **Explainability** | SHAP values translate model predictions into plain English for kitchen staff |
+| 🛡️ **Robust Pipeline** | Handles missing values, invalid dates, duplicates — never crashes on bad data |
+| 📱 **Interactive Dashboard** | 7-page Streamlit dashboard with real-time filters and Plotly charts |
+| 🔌 **REST API** | FastAPI endpoints for integration with POS systems and inventory tools |
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone and set up
-cd ecomeal-ai
+# 1. Clone the repository
+git clone https://github.com/GaneshAdapnor/AI-powered-food-waste-prediction.git
+cd AI-powered-food-waste-prediction
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 2. (Optional) Add your Anthropic API key for AI-powered recommendations
-cp .env.example .env
-# Edit .env: ANTHROPIC_API_KEY=your_key_here
+# 3. Add your Gemini API key (optional — works without it)
+echo "GEMINI_API_KEY=your_key_here" > .env
 
-# 3. Run the full pipeline
+# 4. Run the full pipeline
 python3 main.py
 
-# 4. Launch the interactive dashboard
+# 5. Launch the dashboard
 streamlit run dashboard/streamlit_app.py
 
-# 5. Run tests
-python3 -m pytest tests/ -v
-
-# 6. Start REST API
+# 6. Or start the REST API
 python3 api/app.py  # → http://localhost:8000/docs
 ```
 
+> 🌐 **Or just use the live app:** [ai-powered-food-waste-prediction.streamlit.app](https://ai-powered-food-waste-prediction.streamlit.app)
+
 ---
 
-## System Architecture
+## 🏗️ System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        ECOMEAL AI PIPELINE                      │
+├───────────┬──────────────┬────────────────┬────────────────────┤
+│  DATA     │  ML MODELS   │  AI ENGINE     │  INTERFACES        │
+│           │              │                │                    │
+│ Generator │ Wastage      │ Gemini API     │ Streamlit          │
+│ 1,200+    │ Predictor    │ Chef Specials  │ Dashboard          │
+│ records   │ XGB + LGB    │                │ (7 pages)          │
+│           │ AUC = 0.90   │ Template       │                    │
+│ Preproc.  │              │ Fallback       │ FastAPI            │
+│ Cleaning  │ Demand       │                │ REST API           │
+│ Features  │ Forecaster   │ Explainability │                    │
+│           │ Holt-Winters │ Engine         │ CLI                │
+│           │              │ SHAP → NL      │ main.py            │
+│           │ Anomaly      │                │                    │
+│           │ Detector     │                │                    │
+│           │ IsoForest    │                │                    │
+└───────────┴──────────────┴────────────────┴────────────────────┘
+```
 
 ```
 ecomeal-ai/
-├── src/
-│   ├── config.py                 # Central configuration
-│   ├── data/
-│   │   ├── generator.py          # Realistic dataset simulation (1200+ records)
-│   │   └── preprocessor.py       # Robust cleaning + feature engineering
-│   ├── models/
-│   │   ├── wastage_predictor.py  # XGBoost + LightGBM ensemble + SHAP
-│   │   ├── demand_forecaster.py  # Holt-Winters exponential smoothing
-│   │   └── anomaly_detector.py   # Isolation Forest + rule-based detection
-│   └── ai/
-│       ├── recommendation_engine.py  # Claude API + template fallback
-│       └── explainability.py         # SHAP → natural language explanations
-├── dashboard/
-│   └── streamlit_app.py          # 7-page interactive dashboard
-├── api/
-│   └── app.py                    # FastAPI REST endpoints
-├── tests/
-│   └── test_pipeline.py          # 18 integration tests
-└── main.py                       # Pipeline orchestrator with rich CLI output
+├── 📂 src/
+│   ├── config.py                  # Central configuration
+│   ├── 📂 data/
+│   │   ├── generator.py           # Realistic dataset simulation
+│   │   └── preprocessor.py        # Robust cleaning + feature engineering
+│   ├── 📂 models/
+│   │   ├── wastage_predictor.py   # XGBoost + LightGBM + SHAP
+│   │   ├── demand_forecaster.py   # Holt-Winters time-series
+│   │   └── anomaly_detector.py    # Isolation Forest + rules
+│   └── 📂 ai/
+│       ├── recommendation_engine.py  # Gemini API integration
+│       └── explainability.py         # SHAP → natural language
+├── 📂 dashboard/
+│   └── streamlit_app.py           # 7-page interactive dashboard
+├── 📂 api/
+│   └── app.py                     # FastAPI REST endpoints
+├── 📂 tests/
+│   └── test_pipeline.py           # 18 integration tests
+└── main.py                        # Pipeline orchestrator
 ```
 
 ---
 
-## Dataset Approach
+## 📊 Dashboard Pages
 
-### Synthetic Data with Realistic Patterns
+<table>
+<tr>
+<td width="50%">
 
-Since no public restaurant inventory dataset captures all required fields, I simulated **1,200+ inventory entries** across **9 food categories** and **70+ ingredient types** using domain-specific parameters.
+**🏠 Overview**
+- KPI cards: total items, waste value at risk, critical count
+- Risk distribution pie chart
+- Expiry timeline scatter plot
 
-**Key design decisions:**
+**📦 Inventory Analysis**
+- Full filterable inventory table
+- Category health comparison charts
+- Waste value by category
 
-- **Category-specific shelf lives**: Vegetables expire in 2-14 days; Spices in 90-730 days. Not uniform random.
-- **Consumption patterns**: Weekend demand 35% higher than Monday (Friday=1.2x, Saturday=1.35x multiplier). Simulates real restaurant weekend rush.
-- **Seasonal trends**: Slight 5% consumption growth over 90-day history window.
-- **Occasional spikes**: 3% probability of 1.5x consumption spike per day (events, promotions).
-- **Intentional data quality issues**: 3% missing quantities, 2% invalid dates, 1% negative values, 2% duplicates — to simulate real-world messiness and demonstrate robust handling.
+**🔮 Wastage Predictions**
+- Probability distribution histogram
+- SHAP feature importance chart
+- Top 20 items at highest risk
 
-**Inventory fields generated:**
-`ingredient_id`, `name`, `category`, `quantity`, `unit`, `purchase_date`, `expiry_date`, `daily_consumption`, `price_per_unit`, `supplier`, `storage_type`, `historical_wastage_rate`, `min_stock_level`, `max_stock_level`
+</td>
+<td width="50%">
 
-**Assumption**: Daily consumption follows a log-normal-ish distribution within category bounds. I did not simulate seasonality at the individual ingredient level (e.g., mango demand in summer) since that would require geo-specific data I don't have. Documented as a future improvement.
+**📈 Demand Forecasting**
+- Per-ingredient 30-day forecast
+- Confidence interval visualization
+- Overstock / shortage alerts table
+
+**🤖 AI Recommendations**
+- Gemini-powered Chef Specials
+- Prioritized action plan
+- Bulk usage strategies
+
+**🔍 Anomaly Detection**
+- Detected anomaly list with severity
+- Anomaly type breakdown chart
+- ML score scatter plot
+
+**💡 Explainability**
+- Per-item risk explanation
+- Category-level risk analysis
+- SHAP feature importance
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Feature Engineering
+## 🤖 AI Integration
 
-The core insight: **waste risk = mismatch between stock duration and time until expiry**.
+The recommendation engine uses **Google Gemini** to generate kitchen-ready insights:
 
-| Feature | Formula | Why It Matters |
-|---|---|---|
-| `days_to_expiry` | `expiry_date - today` | Primary signal |
-| `days_of_stock` | `quantity / daily_consumption` | How long stock will last |
-| `waste_surplus_days` | `max(0, days_of_stock - days_to_expiry)` | Direct waste estimate |
-| `estimated_waste_qty` | `waste_surplus_days * daily_consumption` | Quantity that will expire |
-| `waste_value_at_risk` | `estimated_waste_qty * price_per_unit` | Business-facing metric |
-| `turnover_rate` | `daily_consumption / quantity` | Speed of inventory movement |
-| `stock_utilization` | `quantity / max_stock_level` | Overstock indicator |
-| `is_overstocked` | `quantity > max_stock_level` | Boolean overstock flag |
-| `category_avg_waste_rate` | Group mean of `historical_wastage_rate` | Category-level prior |
-| `raw_waste_probability` | Sigmoid of `(days_of_stock / days_to_expiry - 1)` blended with historical rate | Pre-model signal |
+```python
+# Example output from Gemini AI
+{
+  "dishes": [
+    {
+      "name": "Mushroom & Spinach Risotto",
+      "cuisine_style": "Italian",
+      "expiring_ingredients_used": ["Mushrooms", "Spinach", "Heavy Cream"],
+      "estimated_portions": 18,
+      "waste_saved_kg": 3.2,
+      "chef_tips": "Blanch spinach separately to preserve colour"
+    }
+  ],
+  "action_plan": [...],
+  "estimated_waste_savings_inr": 4800
+}
+```
 
-**Encoding**: Categories and storage types encoded as ordinal integers. Price tier computed per-category using quantile binning (Low=0, Mid=1, High=2) to capture relative pricing within a food category.
+> 💡 **Works without an API key** — falls back to intelligent template-based recommendations automatically.
 
 ---
 
-## Model Selection & Reasoning
+## 🧠 ML Model Details
 
-### Wastage Prediction (Classification)
+### Wastage Prediction
+
+| Metric | Score |
+|--------|-------|
+| **ROC-AUC** | 0.90 |
+| **F1 Score** | 0.82 |
+| **Precision** | 0.88 |
+| **Recall** | 0.76 |
 
 **Why XGBoost + LightGBM ensemble?**
-- Both handle tabular data extremely well with small-to-medium datasets
-- XGBoost: better accuracy on complex non-linear patterns
-- LightGBM: faster training, handles categorical features better
-- Ensemble via probability averaging reduces variance without overfitting
-- Both support SHAP natively — critical for the explainability requirement
-- Alternative considered: Random Forest (more stable but slower inference, less SHAP integration)
-- Alternative considered: Logistic Regression (interpretable but can't capture non-linear interactions between `days_to_expiry` and `daily_consumption`)
+- Both excel at tabular data with non-linear interactions
+- Ensemble averaging reduces variance by ~3% AUC vs single model
+- Native SHAP support for explainability
+- `scale_pos_weight` handles class imbalance automatically
 
-**Training setup:**
-- 80/20 train/test split, stratified by waste label
-- `scale_pos_weight` adjusted for class imbalance (~45% waste rate in simulated data)
-- No data leakage: labels generated from rule-based signal + noise before feature engineering runs
+### Key Features (by SHAP importance)
 
-**Results:**
 ```
-ROC-AUC: 0.90   (excellent discrimination)
-F1:      0.82
-Precision: 0.88  (few false alarms)
-Recall:  0.76    (acceptable, use Chef Specials to catch near-misses)
+waste_surplus_days      ████████████████████  (most important)
+days_to_expiry          ████████████████
+days_of_stock           ██████████████
+turnover_rate           ████████████
+historical_wastage_rate ██████████
+stock_utilization       ████████
+is_near_expiry          ██████
+category_avg_waste_rate █████
 ```
-
-The high precision matters for restaurant operations — chefs trust alerts they don't see many false positives on.
 
 ### Demand Forecasting
 
-**Why Holt-Winters Exponential Smoothing?**
-- Restaurant demand has strong weekly seasonality (weekend spikes)
-- Holt-Winters handles both trend + seasonal components natively
-- Lightweight, interpretable, no GPU needed
-- Works well on 90-day history per ingredient
-- Graceful fallback: if <14 days history, uses exponential moving average
-
-Alternative considered: Prophet — more sophisticated but 5x slower, overkill for per-ingredient restaurant forecasting. ARIMA — doesn't handle seasonality as cleanly without explicit parameter tuning.
-
-### Anomaly Detection
-
-**Why Isolation Forest + Rule-based hybrid?**
-- Isolation Forest: unsupervised, no labels needed, scales well, handles multivariate anomalies
-- Rule-based layer: domain knowledge catches what statistics miss (e.g., zero turnover on perishables, price spikes within category)
-- 5% contamination rate: reasonable for restaurant inventory where ~5% of items are genuinely anomalous
+Uses **Holt-Winters Exponential Smoothing** with:
+- Additive trend component
+- Weekly seasonality (7-day period)
+- 95% confidence intervals
+- Graceful fallback to EMA for short series
 
 ---
 
-## AI Integration
+## 🛡️ Data Handling
 
-### Claude API (Anthropic)
-
-The recommendation engine uses Claude to generate:
-1. **Chef Specials**: Creative dishes that use expiring ingredients as primary components
-2. **Action Plans**: Prioritized kitchen team tasks sorted by urgency
-3. **Bulk Strategies**: Batch cooking, freezing, and cross-utilization suggestions
-4. **Inventory Report**: Natural language executive summary for kitchen managers
-
-**Prompt engineering approach:**
-- Structured JSON output spec in prompt → reliable parsing
-- Ingredients formatted with urgency, quantity, and waste value → cost-aware recommendations
-- System prompt establishes chef persona with waste reduction expertise
-- Temperature: default (balanced creativity + reliability)
-
-**Graceful fallback**: If `ANTHROPIC_API_KEY` is not set, the system switches to **template-based recommendations** that still use real inventory data (expiring ingredients, quantities, waste values). The system never crashes without the API key.
-
----
-
-## Real-World Data Handling
-
-The preprocessing pipeline handles every data quality issue without crashing:
-
-| Issue | Handling |
-|---|---|
-| Missing `quantity` | Filled with category median |
-| Missing `daily_consumption` | Filled with category median, zero → 0.01 |
-| Invalid/unparseable dates | Rows dropped with warning logged |
-| Negative quantities | Converted to absolute value (data entry error) |
-| Duplicate `ingredient_id` | First occurrence retained |
-| Inconsistent category casing | Normalized to Title Case, mapped to known categories |
-| Zero consumption on perishables | Flagged as anomaly by rule-based detector |
-| Null `price_per_unit` | Category median imputation |
-
-Every cleaning step is logged with counts. The `cleaning_report` dict provides a full audit trail.
-
----
-
-## Explainability
-
-Three levels of explainability:
-
-1. **SHAP values** (model-level): TreeExplainer on XGBoost gives per-feature SHAP contributions for each prediction. Feature importance chart shows `waste_surplus_days` and `days_to_expiry` dominate.
-
-2. **Natural language per item** (instance-level): The `ExplainabilityEngine` converts SHAP values into plain English: "At current consumption of 0.8 kg/day, this item will have 4.2 days of unconsumed stock when it expires in 3 days. ~3.4 kg worth ₹680 will be wasted."
-
-3. **Claude-powered explanations** (optional): With API key set, the explanation engine can query Claude for even richer, context-aware explanations.
-
----
-
-## Scalability Considerations
-
-- **Batch processing**: The pipeline processes 1,200+ records without any per-record loops in the model inference step — uses vectorized pandas/numpy operations throughout.
-- **Incremental updates**: The preprocessor and predictor are stateless — new inventory rows can be processed independently and appended to the processed CSV.
-- **Model serving**: XGBoost/LightGBM models are serialized with joblib. Loading is ~100ms. FastAPI endpoint wraps model in a singleton — no reload per request.
-- **Caching**: Streamlit uses `@st.cache_data(ttl=300)` — data reloads every 5 minutes, not per user interaction.
-- **Demand forecasting at scale**: Currently forecasts 80 ingredients in ~500ms. For 1000+ ingredients: parallelize with `concurrent.futures.ThreadPoolExecutor` (each ingredient is independent).
-- **Future scale path**: Replace flat CSV with a time-series database (TimescaleDB or InfluxDB). Use Redis for recommendation caching.
-
----
-
-## Tradeoffs Made
-
-| Decision | Chosen | Tradeoff |
-|---|---|---|
-| Ensemble vs. single model | XGB + LGB ensemble | +2-3% AUC, +300ms training |
-| SHAP vs simpler explainability | SHAP TreeExplainer | Richer explanations, depends on model structure |
-| Streamlit vs Flask UI | Streamlit | 10x faster to build, less control over UX |
-| Holt-Winters vs Prophet | Holt-Winters | Faster, less accurate for long-horizon forecasts |
-| Synthetic data vs real data | Synthetic with domain constraints | Controllable, reproducible, no licensing issues |
-| Claude API with fallback vs hard dependency | Fallback to templates | System always works, degrades gracefully |
-
----
-
-## Future Improvements
-
-1. **Real demand data integration**: Connect to POS system via API for actual daily sales by ingredient
-2. **Supplier reliability modeling**: Track delivery delays, quality variations per supplier
-3. **Multi-location inventory**: Suggest inter-kitchen transfers before ordering
-4. **Computer vision**: Identify spoilage from shelf camera images
-5. **RAG-powered recommendations**: Build a vector database of 10,000+ recipes; find optimal dishes given any set of expiring ingredients using semantic search
-6. **Automated retraining**: Retrain weekly as new waste outcomes come in — closes the feedback loop
-7. **Mobile app**: Kitchen-facing mobile interface for real-time alerts
-8. **Pricing integration**: Suggest dynamic discounting for at-risk items (e.g., 20% off salads to clear expiring lettuce)
-
----
-
-## API Endpoints
+The pipeline is **battle-hardened** against real-world data quality issues:
 
 ```
-GET  /health                          System status
-GET  /inventory/at-risk               Top N at-risk items
-GET  /inventory/summary               Aggregated waste intelligence
-POST /predict                         Predict waste risk for a single item
-GET  /recommendations/chef-specials   Generate AI chef specials
-GET  /anomalies                       List inventory anomalies
+✅ Missing values      → Category median imputation
+✅ Invalid dates       → Dropped with audit log
+✅ Negative quantities → Absolute value correction
+✅ Duplicates          → First occurrence retained
+✅ Zero consumption    → Replaced with 0.01 (flagged as anomaly)
+✅ Unknown categories  → Mapped to nearest known category
+✅ Empty DataFrames    → Graceful return, never crashes
+✅ API failures        → Template fallback, pipeline continues
 ```
-
-Full interactive docs at `http://localhost:8000/docs` (Swagger UI).
 
 ---
 
-## Test Coverage
+## 🔌 REST API
 
-18 integration tests covering:
-- Data generation (count, schema, noise injection)
-- Preprocessing (cleaning, deduplication, invalid dates, empty DataFrames)
-- Feature engineering (feature presence, valid probability ranges)
-- Model training and prediction (AUC > 0.5, valid label set)
-- Anomaly detection (detects anomalies, valid severity values)
-- Recommendations (works without API, handles empty inventory)
+```bash
+# Start the API
+python3 api/app.py  # → http://localhost:8000/docs
+```
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | System status + model info |
+| `GET` | `/inventory/at-risk` | Top N items by waste probability |
+| `GET` | `/inventory/summary` | Aggregated waste intelligence |
+| `POST` | `/predict` | Predict waste risk for a single item |
+| `GET` | `/recommendations/chef-specials` | Generate AI dish recommendations |
+| `GET` | `/anomalies` | List detected inventory anomalies |
+
+**Example request:**
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Spinach",
+    "category": "Vegetables",
+    "quantity": 5.0,
+    "unit": "kg",
+    "expiry_date": "2026-06-01",
+    "daily_consumption": 0.8,
+    "price_per_unit": 60.0,
+    "storage_type": "Refrigerator"
+  }'
+```
+
+---
+
+## 🧪 Tests
+
+```bash
+python3 -m pytest tests/ -v
+```
+
+```
+✅ TestDataGenerator::test_generates_correct_count
+✅ TestDataGenerator::test_all_required_columns_present
+✅ TestDataGenerator::test_noise_injection_creates_issues
+✅ TestDataPreprocessor::test_clean_never_crashes
+✅ TestDataPreprocessor::test_handles_completely_empty_dataframe
+✅ TestDataPreprocessor::test_handles_all_invalid_dates
+✅ TestWastagePredictor::test_trains_successfully
+✅ TestWastagePredictor::test_predict_returns_probabilities
+✅ TestAnomalyDetector::test_detects_anomalies
+... 18 tests total — all passing ✅
+```
+
+---
+
+## 📈 Scalability
+
+| Concern | Current | Scale Path |
+|---------|---------|-----------|
+| **Data volume** | 1,200 records | TimescaleDB + batch processing |
+| **Inference** | ~50ms per batch | Model serving with joblib singleton |
+| **Forecasting** | 80 ingredients in ~500ms | `ThreadPoolExecutor` for parallelism |
+| **Recommendations** | Per-request API call | Redis caching for repeated queries |
+| **Dashboard** | 5-min Streamlit cache | CDN + edge caching |
+
+---
+
+## 🔮 Future Roadmap
+
+- [ ] **POS Integration** — real daily sales data from restaurant POS systems
+- [ ] **Computer Vision** — shelf camera integration for automated spoilage detection
+- [ ] **RAG Recommendations** — vector database of 10,000+ recipes for semantic dish matching
+- [ ] **Multi-location** — inter-kitchen transfer suggestions before re-ordering
+- [ ] **Mobile App** — kitchen-facing alerts with one-tap action confirmation
+- [ ] **Dynamic Pricing** — suggest discounts on at-risk menu items to drive demand
+- [ ] **Automated Retraining** — weekly model updates as actual waste outcomes come in
+
+---
+
+## 🧑‍💻 Tech Stack
+
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-orange?style=flat-square)
+![LightGBM](https://img.shields.io/badge/LightGBM-green?style=flat-square)
+![SHAP](https://img.shields.io/badge/SHAP-purple?style=flat-square)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini%20AI-4285F4?style=flat-square&logo=google&logoColor=white)
+![statsmodels](https://img.shields.io/badge/statsmodels-blue?style=flat-square)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
+
+</div>
+
+---
+
+## 📄 License
+
+MIT License — free to use, modify, and distribute.
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the Ecomeal AI/ML Internship Assignment**
+
+*Reducing food waste, one prediction at a time.*
+
+⭐ **Star this repo if you found it useful!**
+
+</div>
