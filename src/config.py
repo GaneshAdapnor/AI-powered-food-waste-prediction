@@ -22,8 +22,19 @@ HIGH_RISK_DAYS = 3
 MEDIUM_RISK_DAYS = 7
 LOW_RISK_DAYS = 14
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-CLAUDE_MODEL = "claude-sonnet-4-6"
+def _get_gemini_key() -> str:
+    # Try environment / .env first, then Streamlit secrets
+    key = os.getenv("GEMINI_API_KEY", "")
+    if not key:
+        try:
+            import streamlit as st
+            key = st.secrets.get("GEMINI_API_KEY", "")
+        except Exception:
+            pass
+    return key
+
+GEMINI_API_KEY = _get_gemini_key()
+GEMINI_MODEL = "gemini-2.0-flash-lite"
 
 CATEGORY_CONFIG = {
     "Vegetables": {
