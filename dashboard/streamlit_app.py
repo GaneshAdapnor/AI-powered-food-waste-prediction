@@ -355,7 +355,11 @@ def page_demand_forecasting(df, forecast_df):
             try:
                 daily = ing_forecast["daily_forecasts"]
                 if isinstance(daily, str):
-                    daily = json.loads(daily)
+                    try:
+                        daily = json.loads(daily)
+                    except (json.JSONDecodeError, ValueError):
+                        import ast
+                        daily = ast.literal_eval(daily)
 
                 if daily:
                     forecast_chart_df = pd.DataFrame(daily)
