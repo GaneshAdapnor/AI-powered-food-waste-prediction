@@ -358,8 +358,10 @@ def page_demand_forecasting(df, forecast_df):
                     try:
                         daily = json.loads(daily)
                     except (json.JSONDecodeError, ValueError):
-                        import ast
-                        daily = ast.literal_eval(daily)
+                        import ast, re
+                        # strip np.float64(...) wrappers left by old data
+                        cleaned = re.sub(r'np\.float64\(([^)]+)\)', r'\1', daily)
+                        daily = ast.literal_eval(cleaned)
 
                 if daily:
                     forecast_chart_df = pd.DataFrame(daily)

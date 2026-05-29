@@ -58,6 +58,11 @@ class DemandForecaster:
                 results.append(self._fallback_forecast(ing_history, ing_id, ing_name, category))
 
         forecast_summary = pd.DataFrame(results)
+        # Serialize daily_forecasts to JSON string so CSV round-trip is clean
+        import json as _json
+        forecast_summary["daily_forecasts"] = forecast_summary["daily_forecasts"].apply(
+            lambda x: _json.dumps(x) if isinstance(x, list) else x
+        )
         self._generate_alerts(forecast_summary, inventory_df)
 
         logger.info(f"Forecasting complete. {len(self.alerts)} alerts generated.")
@@ -102,9 +107,9 @@ class DemandForecaster:
             daily_forecasts = [
                 {
                     "day": i + 1,
-                    "predicted_consumption": max(0, round(v, 3)),
-                    "lower_bound": max(0, round(v - 1.96 * std_error, 3)),
-                    "upper_bound": max(0, round(v + 1.96 * std_error, 3)),
+                    "predicted_consumption": float(max(0, round(float(v), 3))),
+                    "lower_bound": float(max(0, round(float(v) - 1.96 * float(std_error), 3))),
+                    "upper_bound": float(max(0, round(float(v) + 1.96 * float(std_error), 3))),
                 }
                 for i, v in enumerate(forecast.values)
             ]
@@ -144,9 +149,9 @@ class DemandForecaster:
         daily_forecasts = [
             {
                 "day": i + 1,
-                "predicted_consumption": round(avg, 3),
-                "lower_bound": max(0, round(avg - 1.96 * std, 3)),
-                "upper_bound": round(avg + 1.96 * std, 3),
+                "predicted_consumption": float(round(avg, 3)),
+                "lower_bound": float(max(0, round(avg - 1.96 * std, 3))),
+                "upper_bound": float(round(avg + 1.96 * std, 3)),
             }
             for i in range(self.forecast_horizon)
         ]
