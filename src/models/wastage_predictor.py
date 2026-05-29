@@ -138,6 +138,8 @@ class WastagePredictor:
         """Add waste predictions and risk scores to inventory dataframe."""
         if not self._is_trained:
             raise RuntimeError("Model not trained. Call train() first.")
+        if df is None or df.empty:
+            return df
 
         X, _ = self._prepare_features(df, fit=False)
 

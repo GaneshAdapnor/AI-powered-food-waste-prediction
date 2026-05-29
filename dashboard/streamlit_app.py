@@ -227,6 +227,10 @@ def page_overview(df):
 def page_inventory_analysis(df):
     st.markdown('<h2 class="section-header">Inventory Analysis</h2>', unsafe_allow_html=True)
 
+    if df is None or df.empty:
+        st.warning("No data matches the current filters. Adjust the sidebar filters.")
+        return
+
     display_cols = [
         "name", "category", "quantity", "unit", "days_to_expiry",
         "expiry_risk_level", "daily_consumption", "days_of_stock",
@@ -273,6 +277,10 @@ def page_inventory_analysis(df):
 
 def page_wastage_predictions(df):
     st.markdown('<h2 class="section-header">Wastage Predictions</h2>', unsafe_allow_html=True)
+
+    if df is None or df.empty:
+        st.warning("No data matches the current filters. Adjust the sidebar filters.")
+        return
 
     predictor = load_predictor()
 
